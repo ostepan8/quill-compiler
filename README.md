@@ -1,6 +1,7 @@
 # Quill Programming Language Compiler
 
-Quill is a Python-inspired programming language that compiles to native machine code via LLVM. Write Python-like code and get fast, optimized executables.
+Quill is a Python-inspired programming language that compiles to native machine code via LLVM. 
+Write Python-like code and get fast, optimized executables.
 
 ## ✨ Features
 
@@ -468,6 +469,14 @@ print(value)      # Output values to console (type-polymorphic)
 - Advanced generic type features
 - Compile-time evaluation
 - IDE integration and language server
+
+## 🤝 Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](https://github.com/ostepan8/quill-compiler#contributing) for guidelines.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/ostepan8/quill-compiler#license) file for details.
 
 ## 🐛 Troubleshooting
 

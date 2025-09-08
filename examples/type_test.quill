@@ -1,0 +1,9 @@
+def simple():
+    x = 42
+    y = 3.14
+    z = x + y
+    return z
+
+def main():
+    result = simple()
+    print(result)

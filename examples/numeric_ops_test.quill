@@ -1,0 +1,20 @@
+def test_numeric_optimizations():
+    # Test integer constants that should trigger optimizations
+    a = 10
+    b = 20
+    c = a + b       # Should be optimized to integer add
+    
+    d = 8
+    e = d * 4       # Should be optimized to bit shift (4 is power of 2)
+    
+    f = 16
+    g = f / 2       # Should be optimized to bit shift (2 is power of 2)
+    
+    # Test comparisons
+    if a == 10:     # Should be optimized to integer comparison
+        return c + e + g
+    return 0
+
+def main():
+    result = test_numeric_optimizations()
+    print(result)

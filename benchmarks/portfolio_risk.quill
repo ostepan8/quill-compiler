@@ -1,0 +1,146 @@
+def abs_value(x):
+    if x < 0:
+        return -x
+    return x
+
+def sqrt(x):
+    # Newton-Raphson method for square root
+    if x <= 0:
+        return 0
+    
+    guess = x / 2
+    i = 0
+    while i < 10:
+        guess = (guess + x / guess) / 2
+        i = i + 1
+    return guess
+
+def portfolio_var(num_assets, confidence_level):
+    # Portfolio Value at Risk calculation
+    # Simulates a portfolio with correlated returns
+    
+    # Simplified correlation matrix (3x3 for 3 assets)
+    # Asset 1: Stocks (high volatility)
+    # Asset 2: Bonds (medium volatility) 
+    # Asset 3: Commodities (high volatility)
+    
+    weights1 = 0.5  # 50% stocks
+    weights2 = 0.3  # 30% bonds
+    weights3 = 0.2  # 20% commodities
+    
+    # Expected returns (annualized %)
+    exp_return1 = 0.12  # 12% stocks
+    exp_return2 = 0.05  # 5% bonds
+    exp_return3 = 0.08  # 8% commodities
+    
+    # Volatilities (annualized %)
+    vol1 = 0.20  # 20% stock volatility
+    vol2 = 0.05  # 5% bond volatility
+    vol3 = 0.25  # 25% commodity volatility
+    
+    # Correlation coefficients
+    corr12 = 0.3   # stocks-bonds correlation
+    corr13 = 0.5   # stocks-commodities correlation
+    corr23 = 0.1   # bonds-commodities correlation
+    
+    # Portfolio expected return
+    portfolio_return = weights1 * exp_return1 + weights2 * exp_return2 + weights3 * exp_return3
+    
+    # Portfolio variance calculation
+    portfolio_var_calc = (weights1 * weights1 * vol1 * vol1) + 
+                        (weights2 * weights2 * vol2 * vol2) + 
+                        (weights3 * weights3 * vol3 * vol3) +
+                        (2 * weights1 * weights2 * vol1 * vol2 * corr12) +
+                        (2 * weights1 * weights3 * vol1 * vol3 * corr13) +
+                        (2 * weights2 * weights3 * vol2 * vol3 * corr23)
+    
+    portfolio_vol = sqrt(portfolio_var_calc)
+    
+    # VaR calculation (assuming normal distribution)
+    # For 95% confidence level, z-score = 1.645
+    # For 99% confidence level, z-score = 2.326
+    z_score = 1.645  # 95% confidence level
+    if confidence_level > 98:
+        z_score = 2.326  # 99% confidence level
+    
+    # Daily VaR (1-day, assuming 252 trading days per year)
+    daily_vol = portfolio_vol / sqrt(252)
+    var_95 = z_score * daily_vol
+    
+    return var_95
+
+def monte_carlo_var(num_simulations):
+    # Monte Carlo simulation for VaR
+    # Simple pseudo-random number generator
+    seed = 42
+    
+    portfolio_value = 1000000  # $1M portfolio
+    worst_losses = 0
+    count_extreme = 0
+    
+    i = 0
+    while i < num_simulations:
+        # Generate correlated random returns for 3 assets
+        # Using simple LCG for randomization
+        seed = (1664525 * seed + 1013904223) % 4294967296
+        rand1 = ((seed % 10000) - 5000) / 10000.0  # [-0.5, 0.5]
+        
+        seed = (1664525 * seed + 1013904223) % 4294967296
+        rand2 = ((seed % 10000) - 5000) / 10000.0
+        
+        seed = (1664525 * seed + 1013904223) % 4294967296
+        rand3 = ((seed % 10000) - 5000) / 10000.0
+        
+        # Simulate daily returns
+        return1 = 0.12 / 252 + 0.20 / sqrt(252) * rand1  # Stock return
+        return2 = 0.05 / 252 + 0.05 / sqrt(252) * rand2  # Bond return
+        return3 = 0.08 / 252 + 0.25 / sqrt(252) * rand3  # Commodity return
+        
+        # Portfolio return
+        portfolio_return = 0.5 * return1 + 0.3 * return2 + 0.2 * return3
+        
+        # Portfolio loss (negative return)
+        if portfolio_return < 0:
+            loss = abs_value(portfolio_return * portfolio_value)
+            worst_losses = worst_losses + loss
+            count_extreme = count_extreme + 1
+        
+        i = i + 1
+    
+    # Average loss in extreme scenarios
+    if count_extreme > 0:
+        avg_extreme_loss = worst_losses / count_extreme
+    else:
+        avg_extreme_loss = 0
+    
+    return avg_extreme_loss
+
+def main():
+    # Portfolio Risk Analysis Benchmark
+    # Tests mathematical computation intensive algorithms used in quant finance
+    
+    total_var = 0
+    total_mc_var = 0
+    
+    # Run multiple VaR calculations with different parameters
+    i = 0
+    while i < 1000:  # 1000 calculations for benchmarking
+        # Parametric VaR
+        confidence = 95 + (i % 5)  # Confidence levels 95-99%
+        var_result = portfolio_var(3, confidence)
+        total_var = total_var + var_result
+        
+        # Monte Carlo VaR (smaller simulation for speed)
+        mc_result = monte_carlo_var(1000)
+        total_mc_var = total_mc_var + mc_result
+        
+        i = i + 1
+    
+    avg_var = total_var / 1000
+    avg_mc_var = total_mc_var / 1000
+    
+    # Combined risk measure
+    combined_risk = (avg_var + avg_mc_var / 1000000) * 1000  # Scale for comparison
+    
+    print(combined_risk)
+    return combined_risk

@@ -1,0 +1,7 @@
+def test_function(x):
+    return x * 2
+
+def main():
+    result = test_function(42)
+    print(result)
+    return result

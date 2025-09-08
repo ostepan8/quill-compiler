@@ -1,0 +1,19 @@
+# This program should trigger multiplication and division optimizations
+def test_power_of_two_optimizations():
+    a = 100
+    
+    # These should be optimized to bit shifts
+    b = a * 8    # 8 is 2^3, should become left shift by 3
+    c = a * 16   # 16 is 2^4, should become left shift by 4
+    d = a / 4    # 4 is 2^2, should become right shift by 2
+    e = a / 2    # 2 is 2^1, should become right shift by 1
+    
+    # These should not be optimized (not powers of 2)
+    f = a * 7
+    g = a / 3
+    
+    return b + c + d + e + f + g
+
+def main():
+    result = test_power_of_two_optimizations()
+    print(result)
